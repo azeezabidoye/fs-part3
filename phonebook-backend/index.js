@@ -17,7 +17,31 @@ app.get("/", (request, response) => {
 });
 
 // Create a new Person entry
+app.post("/api/persons", (request, response) => {
+  const body = request.body;
+  const findName = personsData.map((person) =>
+    person.name.toLowerCase().includes(body.name.toLowerCase())
+  );
+  const findNumber = personsData.find(
+    (person) => person.number === body.number
+  );
 
+  if ((!body.name || !body.number) && (findName || findNumber)) {
+    return response.status(400).json({
+      error: "Name must be unique",
+    });
+  }
+
+  const person = {
+    id: generateID(),
+    name: body.name,
+    number: Number(body.number),
+  };
+
+  personsData.concat(person);
+
+  response.json(person);
+});
 // Get all Persons Data
 app.get("/api/persons", (request, response) => {
   response.json(personsData);
